@@ -87,7 +87,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void сheckingExistenceOfUser(Long id) {
+    public void checkIfUserExists(Long id) {
         if (!users.containsKey(id)) {
             log.info("Пользователь с id {} не найден.", id);
             throw new NotFoundException("Пользователь с id" + id + " не найден.");

@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {//обернуть в dto
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
         log.info("Получен Post запрос на добавление пользователя {}", userDto);
 
         return new ResponseEntity<>(userService.createNewUser(userDto), HttpStatus.CREATED);

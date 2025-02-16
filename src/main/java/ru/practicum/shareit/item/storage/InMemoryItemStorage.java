@@ -43,7 +43,7 @@ public class InMemoryItemStorage implements ItemStorage {
     @Override
     public Item getItem(Long id, Long userId) {
         if (items.containsKey(id)) {
-            userStorage.сheckingExistenceOfUser(userId);
+            userStorage.checkIfUserExists(userId);
             Item item = items.get(id);
             log.info("Получена вещь c id {} пользователя c id {} .", id, userId);
 
@@ -129,7 +129,7 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public List<Item> findItems(String text, Long userId) {
-        userStorage.сheckingExistenceOfUser(userId);
+        userStorage.checkIfUserExists(userId);
         if (text == null || text.isBlank()) {
             log.info("Ничего не нашли по запросу пользователя с id {}.", userId);
             return List.of();
