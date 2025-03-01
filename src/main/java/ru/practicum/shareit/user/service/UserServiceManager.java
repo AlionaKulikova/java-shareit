@@ -43,7 +43,7 @@ public class UserServiceManager implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден."));
     }
 
-   @Transactional
+    @Transactional
     @Override
     public UserDto createNewUser(UserDto userDto) {
         validateUser(userDto);
