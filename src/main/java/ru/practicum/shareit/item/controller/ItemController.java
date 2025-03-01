@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
@@ -22,15 +23,15 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemDto>> getItemsOfUser(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<List<ItemResponseDto>> getItemsOfUser(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         log.info("Эндпоинт /items. Получен GET запрос по  от пользователя c id {} на получение всех своих вещей.",
                 userId);
         return new ResponseEntity<>(itemService.getItemsOfUserById(userId), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ItemDto> getItem(@PathVariable Long id,
-                                           @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<ItemResponseDto> getItem(@PathVariable Long id,
+                                                   @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         log.info("Эндпоинт /items/{}. Получен GET запрос от пользователя c id {} на получение вещи с id {}.",
                 id, userId);
 
@@ -50,7 +51,7 @@ public class ItemController {
     public ResponseEntity<?> updateItem(@PathVariable Long id, @RequestBody ItemDto itemDto,
                                         @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         log.info("Эндпоинт /items/{}. Получен PATCH запрос  от пользователя c id {} на обновление" +
-                " обновление вещи с id {}.", id, userId, itemDto);
+                " обновление вещи  {}.", id, userId, itemDto);
 
         return new ResponseEntity<>(itemService.updateItemOfUserById(id, itemDto, userId), HttpStatus.OK);
     }
