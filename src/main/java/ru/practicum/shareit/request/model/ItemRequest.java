@@ -8,13 +8,43 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
+/**
+ * Класс, представляющий запрос на предмет.
+ *
+ * <p>Этот класс используется для хранения информации о запросе на предмет,
+ * включая уникальный идентификатор, описание, пользователя, создавшего запрос,
+ * и дату создания запроса.</p>
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemRequest {
-    private Long id; // уникальный идентификатор запроса;
-    private String description; // текст запроса, содержащий описание требуемой вещи;
-    private User requestor; // пользователь, создавший запрос;
-    private LocalDateTime created; // дата и время создания запроса.
+    /**
+     * Уникальный идентификатор запроса.
+     *
+     * @return уникальный идентификатор запроса
+     */
+    private Long id;
+
+    /**
+     * Текст запроса, содержащий описание требуемой вещи.
+     *
+     * @return описание запрашиваемой вещи
+     */
+    private String description;
+
+    /**
+     * Пользователь, создавший запрос.
+     *
+     * @return пользователь, создавший запрос
+     */
+    private User requestor;
+
+    /**
+     * Дата и время создания запроса.
+     *
+     * @return дата и время создания запроса
+     */
+    private LocalDateTime created;
 }

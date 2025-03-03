@@ -14,6 +14,7 @@ import ru.practicum.shareit.comment.service.CommentService;
 @RequestMapping("/items")
 public class CommentController {
     private final CommentService commentService;
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @Autowired
     public CommentController(CommentService commentService) {
@@ -22,7 +23,7 @@ public class CommentController {
 
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<CommentResponseDto> addComment(@PathVariable("itemId") long itemId,
-                                                         @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+                                                         @RequestHeader(value = USER_ID_HEADER) Long userId,
                                                          @RequestBody CommentDto commentDto) {
         log.info("Эдпонинт /items/{}/comment. Получен POST запрос  от пользователя c id {} на создание" +
                         " комментария с id {}.", itemId,

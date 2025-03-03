@@ -18,5 +18,4 @@ public interface ItemService {
     void deleteItemOfUserById(Long id, Long userOwnerId);
 
     List<ItemDto> findItemsOfUser(String text, Long userId);
-
 }

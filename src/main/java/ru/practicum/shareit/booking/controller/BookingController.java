@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingService bookingService;
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @Autowired
     public BookingController(BookingService bookingService) {
@@ -26,7 +27,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<BookingResponseDto> bookingCreate(@RequestBody BookingRequestDto bookingRequestDto,
-                                                            @RequestHeader(value = "X-Sharer-User-Id")
+                                                            @RequestHeader(value = USER_ID_HEADER)
                                                             @Positive Long userId) {
         log.info("Эндпоинт /bookings. POST запрос  на добавление бронирования {}.", bookingRequestDto);
         return new ResponseEntity<>(bookingService.create(bookingRequestDto, userId), HttpStatus.CREATED);
@@ -35,7 +36,7 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     public ResponseEntity<BookingResponseDto> confirm(@PathVariable("bookingId") @Positive long bookingId,
                                                       @RequestParam(name = "approved") boolean approved,
-                                                      @RequestHeader("X-Sharer-User-Id") @Positive long userOwnerId) {
+                                                      @RequestHeader(USER_ID_HEADER) @Positive long userOwnerId) {
         log.info("Эндпоинт /bookings/{}. PATCH запрос по  от владельца вещи c id {} статус подтверждения = {} ," +
                 " бронирования  с id {}.", bookingId, userOwnerId, approved, bookingId);
         return new ResponseEntity<>(bookingService.confirm(bookingId, userOwnerId, approved), HttpStatus.OK);
@@ -44,7 +45,7 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public ResponseEntity<BookingResponseDto> getById(@PathVariable("bookingId")
                                                       @Positive long bookingId,
-                                                      @RequestHeader(value = "X-Sharer-User-Id")
+                                                      @RequestHeader(value = USER_ID_HEADER)
                                                       @Positive Long userId) {
         log.info("Эндпоинт /bookings/{}. GET запрос по  от пользователя с id {} на получение бронирования с id {}.",
                 bookingId, userId, bookingId);
@@ -56,7 +57,7 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(defaultValue = "0") @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Positive int size,
-            @RequestHeader("X-Sharer-User-Id") @Positive long bookerId) {
+            @RequestHeader(USER_ID_HEADER) @Positive long bookerId) {
         log.info("Эндпоинт /bookings. GET запрос от пользователя с id {} на получение списка всех бронирований" +
                 " этого пользователя.", bookerId);
         return new ResponseEntity<>(bookingService.getAllByBooker(from, size, state, bookerId), HttpStatus.OK);
@@ -67,7 +68,7 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(defaultValue = "0") @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Positive int size,
-            @RequestHeader("X-Sharer-User-Id") @Positive long ownerId) {
+            @RequestHeader(USER_ID_HEADER) @Positive long ownerId) {
         log.info("Эндпоинт /bookings/owner. GET запрос на получение списка всех бронирований для вещей, которыми" +
                         " владеет пользователь с id {}.",
                 ownerId);

@@ -46,6 +46,7 @@ public class ItemMapper {
         if (item == null) {
             throw new IllegalArgumentException("Вещь не может быть null.");
         }
+
         return ItemResponseDto.builder()
                 .id(item.getId())
                 .available(item.getAvailable())

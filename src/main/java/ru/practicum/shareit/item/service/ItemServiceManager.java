@@ -36,7 +36,6 @@ public class ItemServiceManager implements ItemService {
     @Autowired
     public ItemServiceManager(ItemRepository itemRepository, UserRepository userRepository,
                               CommentRepository commentRepository, BookingRepository bookingRepository) {
-
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
@@ -46,7 +45,6 @@ public class ItemServiceManager implements ItemService {
     @Override
     public List<ItemResponseDto> getItemsOfUserById(Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с данным id не найден"));
-
         List<ItemResponseDto> itemResponseDto = itemRepository.findAllByOwnerIdOrderByIdAsc(userId).stream()
                 .map(item -> {
                     List<Comment> comments = commentRepository.findAllByItem_Id(item.getId());
@@ -159,10 +157,8 @@ public class ItemServiceManager implements ItemService {
             log.info("Получен пустой лист поиска по запросу пользователя id {}.", userId);
             return List.of();
         }
-
         List<Item> items = itemRepository.findByText(text);
         log.info("Получены все вещи  по текстовому запросу '{} 'для пользователя с id {}.", text, userId);
         return ItemMapper.itemsToItemsDto(items);
     }
 }
-

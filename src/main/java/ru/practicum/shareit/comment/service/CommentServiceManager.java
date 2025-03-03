@@ -39,14 +39,14 @@ public class CommentServiceManager implements CommentService {
     @Transactional
     @Override
     public CommentResponseDto addComment(CommentDto commentDto, long itemId, long userId) {
-        if (bookingRepository.findAllByBooker_IdAndItem_IdAndEndBefore(userId, itemId, LocalDateTime.now()).isEmpty()) {
+        if (bookingRepository.findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Только пользователи, завершившие бронирование" +
                     " данной вещи, могут оставлять комментарии.");
         }
 
         Comment comment = CommentMapper.commentDtoToComment(commentDto);
         comment.setAuthor(
-                userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Датнный пользователь" +
+                userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Даннный пользователь" +
                         " не найден.")));
         comment.setItem(
                 itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Данная вещь не" +
