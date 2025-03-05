@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.mapper;
 
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
@@ -20,7 +21,6 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .owner(item.getOwner())
-                .request(item.getRequest())
                 .build();
     }
 
@@ -35,11 +35,23 @@ public class ItemMapper {
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .owner(itemDto.getOwner())
-                .request(itemDto.getRequest())
                 .build();
     }
 
     public static List<ItemDto> itemsToItemsDto(Collection<Item> items) {
         return items.stream().map(ItemMapper::itemToItemDto).collect(Collectors.toList());
+    }
+
+    public static ItemResponseDto toResposeItem(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Вещь не может быть null.");
+        }
+
+        return ItemResponseDto.builder()
+                .id(item.getId())
+                .available(item.getAvailable())
+                .description(item.getDescription())
+                .name(item.getName())
+                .build();
     }
 }
