@@ -263,10 +263,8 @@ public class ItemRequestServiceTest {
 
         List<ItemRequest> itemRequests = List.of(mockItemRequest1, mockItemRequest2);
 
-        Mockito.
-                when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser1));
-        Mockito.
-                when(itemRequestRepository.findAllByRequestor_IdNotIn(List.of(userId), PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"))))
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser1));
+        Mockito.when(itemRequestRepository.findAllByRequestor_IdNotIn(List.of(userId), PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"))))
                 .thenReturn(new PageImpl<>(itemRequests));
 
         List<ItemRequestResponseDto> result = itemRequestServiceImpl.getAllRequests(from, size, userId);
