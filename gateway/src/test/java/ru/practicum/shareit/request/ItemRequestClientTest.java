@@ -51,7 +51,7 @@ class ItemRequestClientTest {
                 .when(restTemplate.exchange("", HttpMethod.POST, new HttpEntity<>(itemRequestDto,
                         defaultHeaders(1L)), Object.class))
                 .thenReturn(ResponseEntity.ok(itemRequestDto));
-        ResponseEntity<Object> response = itemRequestClient.createRequest( itemRequestDto,1L);
+        ResponseEntity<Object> response = itemRequestClient.createRequest(itemRequestDto, 1L);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(response.getBody(), equalTo(itemRequestDto));
     }

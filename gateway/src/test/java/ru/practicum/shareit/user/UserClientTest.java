@@ -62,7 +62,7 @@ class UserClientTest {
                 .when(restTemplate.exchange("/1", HttpMethod.PATCH, new HttpEntity<>(userDto,
                         defaultHeaders(null)), Object.class))
                 .thenReturn(ResponseEntity.ok(userDto));
-        ResponseEntity<Object> response = userClient.updateUserById( 1L, userDto);
+        ResponseEntity<Object> response = userClient.updateUserById(1L, userDto);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(response.getBody(), equalTo(userDto));
     }
@@ -78,7 +78,6 @@ class UserClientTest {
         assertThat(response.getBody(), equalTo(userDto));
     }
 
-
     @Test
     void testDeleteUserById() {
         Mockito
@@ -89,7 +88,6 @@ class UserClientTest {
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
     }
 
-
     private HttpHeaders defaultHeaders(Long userId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -99,6 +97,4 @@ class UserClientTest {
         }
         return headers;
     }
-
-
 }

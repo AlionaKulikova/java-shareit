@@ -57,7 +57,7 @@ class UserControllerTest {
 
     @Test
     void updateUserById() throws Exception {
-        when(userClient.updateUserById(any(),any()))
+        when(userClient.updateUserById(any(), any()))
                 .thenReturn(ResponseEntity.ok(userDto));
 
         mvc.perform(patch("/users/1")
@@ -95,5 +95,4 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
-
 }

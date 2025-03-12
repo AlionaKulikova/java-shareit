@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerTest {
-
     @Autowired
     ObjectMapper mapper;
 
@@ -51,7 +50,6 @@ class BookingControllerTest {
             .status(Status.WAITING)
             .build();
 
-
     @Test
     void saveNewBooking() throws Exception {
         when(bookingClient.bookItem(1L, bookingRequestDto))
@@ -64,8 +62,6 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
-
     }
 
     @Test
@@ -101,7 +97,7 @@ class BookingControllerTest {
 
     @Test
     void findBookings() throws Exception {
-        when(bookingClient.getBookings(1L, BookingState.ALL,0,10))
+        when(bookingClient.getBookings(1L, BookingState.ALL, 0, 10))
                 .thenReturn(ResponseEntity.ok(List.of(bookingDto)));
 
         mvc.perform(get("/bookings")
@@ -128,6 +124,4 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$[0].id", is(bookingDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].status", is(bookingDto.getStatus().toString())));
     }
-
 }
-
