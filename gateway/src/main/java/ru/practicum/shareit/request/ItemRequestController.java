@@ -21,7 +21,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ResponseEntity<Object> createRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
-                                         @RequestHeader(value = "X-Sharer-User-Id") @Positive Long userId) {
+                                                @RequestHeader(value = "X-Sharer-User-Id") @Positive Long userId) {
         log.info("Получен POST запрос по эндпоинту /requests на добавление нового ItemRequest {} от User с ID {}.",
                 itemRequestDto, userId);
         return itemRequestClient.createRequest(itemRequestDto, userId);
