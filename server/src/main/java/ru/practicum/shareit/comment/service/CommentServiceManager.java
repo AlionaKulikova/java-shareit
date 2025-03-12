@@ -17,8 +17,6 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.TimeZone;
 
 @Slf4j
 @Service
@@ -41,7 +39,6 @@ public class CommentServiceManager implements CommentService {
     @Transactional
     @Override
     public CommentResponseDto addComment(CommentDto commentDto, long itemId, long userId, LocalDateTime date) {
-        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("Europe/Moscow")));
         LocalDateTime now = LocalDateTime.now();
 
         if (bookingRepository.findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, now).isEmpty()) {
