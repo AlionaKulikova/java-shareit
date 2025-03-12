@@ -823,21 +823,6 @@ public class BookingServiceTest {
         assertThat(bookings.get(0).getId()).isEqualTo(waitingBooking.getId());
     }
 
-
-    @Test
-    void getAllByBookerPastStateShouldReturnPastBookings() {
-        Long bookerId = 1L;
-        Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(mockUser1));
-
-        Booking pastBooking = new Booking(4L, LocalDateTime.now().minusDays(5), LocalDateTime.now().minusDays(3), mockItem1, mockUser1, StatusType.APPROVED);
-        List<Booking> bookingList = List.of(pastBooking);
-        Mockito.when(bookingRepository.findBookingByBookerAndEndBeforeOrderByStartDesc(mockUser1, LocalDateTime.now())).thenReturn(bookingList);
-
-        List<BookingResponseDto> bookings = bookingServiceManager.getAllByBooker(0, 10, "PAST", bookerId);
-        assertThat(bookings).hasSize(1);
-        assertThat(bookings.get(0).getId()).isEqualTo(pastBooking.getId());
-    }
-
     @Test
     void getAllByOwnerShouldReturnAllBookings() {
         Long ownerId = 1L;
@@ -850,5 +835,74 @@ public class BookingServiceTest {
         assertThat(bookings).hasSize(2);
         assertThat(bookings.get(0).getId()).isEqualTo(mockBooking1.getId());
         assertThat(bookings.get(1).getId()).isEqualTo(mockBooking2.getId());
+    }
+
+    @Test
+    void getAllByBookerShouldReturnBookings() {
+        Long bookerId = 1L;
+        Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(mockUser1));
+
+        List<Booking> bookingList = List.of(mockBooking1, mockBooking2);
+        Mockito.when(bookingRepository.findBookingByBookerOrderByStartDesc(mockUser1)).thenReturn(bookingList);
+
+        List<BookingResponseDto> bookings = bookingServiceManager.getAllByBooker(0, 10, "ALL", bookerId);
+        assertThat(bookings).hasSize(2);
+        assertThat(bookings.get(0).getId()).isEqualTo(mockBooking1.getId());
+        assertThat(bookings.get(1).getId()).isEqualTo(mockBooking2.getId());
+    }
+
+    @Test
+    void getAllByBookerCurrentStateShouldReturnBookings() {
+        User user = mockUser1;
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        Booking currentBooking = new Booking(3L, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), mockItem1, user, StatusType.APPROVED);
+        List<Booking> bookingList = List.of(currentBooking);
+        Mockito.when(bookingRepository.findBookingByBookerAndStartBeforeAndEndAfterOrderByStartDesc(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(bookingList);
+
+        List<BookingResponseDto> bookings = bookingServiceManager.getAllByBooker(0, 10, "CURRENT", user.getId());
+        assertThat(bookings).hasSize(1);
+        assertThat(bookings.get(0).getId()).isEqualTo(currentBooking.getId());
+    }
+
+    @Test
+    void getAllByBookerPastStateShouldReturnPastBookings() {
+        User user = mockUser1;
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        Booking pastBooking = new Booking(4L, LocalDateTime.now().minusDays(5), LocalDateTime.now().minusDays(1), mockItem1, user, StatusType.APPROVED);
+        List<Booking> bookingList = List.of(pastBooking);
+        Mockito.when(bookingRepository.findBookingByBookerAndEndBeforeOrderByStartDesc(Mockito.any(), Mockito.any()))
+                .thenReturn(bookingList);
+
+        List<BookingResponseDto> bookings = bookingServiceManager.getAllByBooker(0, 10, "PAST", user.getId());
+        assertThat(bookings).hasSize(1);
+        assertThat(bookings.get(0).getId()).isEqualTo(pastBooking.getId());
+    }
+
+    @Test
+    void getAllByBookerWaitingStateShouldReturnWaiting() {
+        User user = mockUser1;
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        Booking waitingBooking = new Booking(5L, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), mockItem1, user, StatusType.WAITING);
+        List<Booking> bookingList = List.of(waitingBooking);
+        Mockito.when(bookingRepository.findBookingByBookerAndStatusOrderByStartDesc(Mockito.any(), Mockito.any()))
+                .thenReturn(bookingList);
+
+        List<BookingResponseDto> bookings = bookingServiceManager.getAllByBooker(0, 10, "WAITING", user.getId());
+        assertThat(bookings).hasSize(1);
+        assertThat(bookings.get(0).getId()).isEqualTo(waitingBooking.getId());
+    }
+
+    @Test
+    void getAllByBookerWithInvalidStateShouldThrowConditions() {
+        Long bookerId = 1L;
+        Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(mockUser1));
+
+        assertThrows(ConditionsNotMetException.class, () -> {
+            bookingServiceManager.getAllByBooker(0, 10, "INVALID_STATE", bookerId);
+        });
     }
 }
