@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 @Transactional
@@ -239,5 +240,107 @@ public class BookingServiceTest {
         Assertions.assertEquals(bookingDto.getItem(), booking.getItem());
         Assertions.assertEquals(bookingDto.getBooker(), booking.getBooker());
         Assertions.assertEquals(bookingDto.getStatus(), booking.getStatus());
+    }
+
+    @Test
+    public void testCreateBooking_ItemNotAvailable() {
+        BookingRequestDto bookingRequestDto = BookingMapper.bookingToRequest(mockBooking1);
+        Long userId = 1L;
+        Item item = mockItem1;
+        item.setAvailable(false);
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.of(new User()));
+        Mockito.when(itemRepository.findById(Mockito.any()))
+                .thenReturn(Optional.of(item));
+        assertThrows(ResponseStatusException.class, () -> bookingServiceManager.createBooking(bookingRequestDto, userId));
+        Mockito.verify(bookingRepository, never()).save(Mockito.any());
+    }
+
+    @Test
+    public void testCreateBooking_StartAfterEnd() {
+        BookingRequestDto bookingRequestDto = BookingMapper.bookingToRequest(mockBooking1);
+        bookingRequestDto.setStart(LocalDateTime.now().plusDays(1));
+        bookingRequestDto.setEnd(LocalDateTime.now().minusDays(1));
+        Long userId = 1L;
+        Item item = mockItem1;
+        item.setAvailable(true);
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.of(new User()));
+        Mockito.when(itemRepository.findById(Mockito.any()))
+                .thenReturn(Optional.of(item));
+        assertThrows(ResponseStatusException.class, () -> bookingServiceManager.createBooking(bookingRequestDto, userId));
+        Mockito.verify(bookingRepository, never()).save(Mockito.any());
+    }
+
+    @Test
+    public void testCreateBooking_StartInPast() {
+        BookingRequestDto bookingRequestDto = BookingMapper.bookingToRequest(mockBooking1);
+        bookingRequestDto.setStart(LocalDateTime.now().minusDays(1));
+        bookingRequestDto.setEnd(LocalDateTime.now().plusDays(1));
+        Long userId = 1L;
+        Item item = mockItem1;
+        item.setAvailable(true);
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.of(new User()));
+        Mockito.when(itemRepository.findById(Mockito.any()))
+                .thenReturn(Optional.of(item));
+        assertThrows(ResponseStatusException.class, () -> bookingServiceManager.createBooking(bookingRequestDto, userId));
+        Mockito.verify(bookingRepository, never()).save(Mockito.any());
+    }
+
+    @Test
+    public void testCreateBooking_UserIsOwner() {
+        BookingRequestDto bookingRequestDto = BookingMapper.bookingToRequest(mockBooking1);
+        Long userId = 1L;
+        Item item = mockItem1;
+        item.setAvailable(true);
+        item.setOwner(new User(userId, "Test User", "test@email.com"));
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.of(new User()));
+        Mockito.when(itemRepository.findById(Mockito.any()))
+                .thenReturn(Optional.of(item));
+        assertThrows(ResponseStatusException.class, () -> bookingServiceManager.createBooking(bookingRequestDto, userId));
+        Mockito.verify(bookingRepository, never()).save(Mockito.any());
+    }
+
+    @Test
+    public void testConfirmBooking_BookingAlreadyApprovedOrRejected() {
+        Booking booking = mockBooking1;
+        booking.setStatus(StatusType.APPROVED);
+        Long bookingId = 1L;
+        Long userOwnerId = 1L;
+        Mockito.when(bookingRepository.findById(bookingId))
+                .thenReturn(Optional.of(booking));
+        Mockito.when(userRepository.existsById(userOwnerId))
+                .thenReturn(true);
+        assertThrows(ResponseStatusException.class, () -> bookingServiceManager.confirm(bookingId, userOwnerId, true));
+        Mockito.verify(bookingRepository, never()).save(Mockito.any());
+    }
+
+    @Test
+    public void testConfirmBooking_BookingNotWaiting() {
+        Booking booking = mockBooking1;
+        booking.setStatus(StatusType.REJECTED);
+        Long bookingId = 1L;
+        Long userOwnerId = 1L;
+        Mockito.when(bookingRepository.findById(bookingId))
+                .thenReturn(Optional.of(booking));
+        Mockito.when(userRepository.existsById(userOwnerId))
+                .thenReturn(true);
+        assertThrows(ResponseStatusException.class, () -> bookingServiceManager.confirm(bookingId, userOwnerId, true));
+        Mockito.verify(bookingRepository, never()).save(Mockito.any());
+    }
+
+    @Test
+    public void testConfirmBooking_UserNotOwner() {
+        Booking booking = mockBooking1;
+        Long bookingId = 1L;
+        Long userOwnerId = 2L;
+        Mockito.when(bookingRepository.findById(bookingId))
+                .thenReturn(Optional.of(booking));
+        Mockito.when(userRepository.existsById(userOwnerId))
+                .thenReturn(true);
+        assertThrows(ResponseStatusException.class, () -> bookingServiceManager.confirm(bookingId, userOwnerId, true));
+        Mockito.verify(bookingRepository, never()).save(Mockito.any());
     }
 }
