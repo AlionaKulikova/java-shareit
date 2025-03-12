@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exeption.ConditionsNotMetException;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -157,5 +158,21 @@ public class UserServiceTest {
 
         Assertions.assertThrows(NotFoundException.class, () -> userService.deleteUserById(nonExistingId));
         Mockito.verify(userRepository, Mockito.times(0)).deleteById(nonExistingId);
+    }
+
+    @Test
+    public void testCreateUserWithInvalidEmail() {
+        UserDto userDto = UserDto.builder().name("Иван").email("invalid-email").build();
+
+        Assertions.assertThrows(ConditionsNotMetException.class, () -> {
+            userService.createNewUser(userDto);
+        });
+    }
+
+    @Test
+    public void testGetUserByIdWithNullId() {
+        Assertions.assertThrows(ConditionsNotMetException.class, () -> {
+            userService.getUserById(null);
+        });
     }
 }

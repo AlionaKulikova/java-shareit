@@ -452,7 +452,3 @@ public class ItemServiceTest {
         Assertions.assertThrows(NotFoundException.class, () -> itemService.deleteItemOfUserById(itemId, userOwnerId));
     }
 }
-
-
-
-

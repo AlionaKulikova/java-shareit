@@ -7,6 +7,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
@@ -24,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -237,5 +241,136 @@ public class ItemRequestServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> itemRequestServiceImpl.getAllRequests(from, size, userId));
+    }
+
+    @Test
+    public void testGetAllRequestsUserNotFound() {
+        Long userId = 1L;
+        int from = 0;
+        int size = 10;
+
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> itemRequestServiceImpl.getAllRequests(from, size, userId));
+    }
+
+    @Test
+    public void testGetAllRequests_ValidInput_DirectCall() {
+        Long userId = 1L;
+        int from = 0;
+        int size = 10;
+
+        List<ItemRequest> itemRequests = List.of(mockItemRequest1, mockItemRequest2);
+
+        Mockito.
+                when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser1));
+        Mockito.
+                when(itemRequestRepository.findAllByRequestor_IdNotIn(List.of(userId), PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"))))
+                .thenReturn(new PageImpl<>(itemRequests));
+
+        List<ItemRequestResponseDto> result = itemRequestServiceImpl.getAllRequests(from, size, userId);
+
+        assertEquals(2, result.size());
+        assertEquals(1L, result.get(0).getId());
+        assertEquals(mockItemRequest1.getDescription(), result.get(0).getDescription());
+        assertEquals(2L, result.get(1).getId());
+        assertEquals(mockItemRequest2.getDescription(), result.get(1).getDescription());
+    }
+
+    @Test
+    public void testCreateRequest_NullRequestDto() {
+        Long userId = 1L;
+        assertThrows(IllegalArgumentException.class, () -> {
+            itemRequestServiceImpl.createRequest(null, userId);
+        });
+    }
+
+    @Test
+    public void testGetAllRequests_UserHasNoRequests() {
+        Long userId = 1L;
+        int from = 0;
+        int size = 10;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser1));
+        Mockito.when(itemRequestRepository.findAllByRequestor_IdNotIn(List.of(userId), PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"))))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        List<ItemRequestResponseDto> result = itemRequestServiceImpl.getAllRequests(from, size, userId);
+
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testGetAllRequests_ValidInput_EmptyList() {
+        Long userId = 1L;
+        int from = 0;
+        int size = 10;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser1));
+        Mockito.when(itemRequestRepository.findAllByRequestor_IdNotIn(List.of(userId), PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"))))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        List<ItemRequestResponseDto> result = itemRequestServiceImpl.getAllRequests(from, size, userId);
+
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testGetAllRequests_ValidInput() {
+        Long userId = 1L;
+        int from = 0;
+        int size = 10;
+
+        List<ItemRequest> itemRequests = List.of(mockItemRequest1, mockItemRequest2);
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser1));
+        Mockito.when(itemRequestRepository.findAllByRequestor_IdNotIn(List.of(userId), PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"))))
+                .thenReturn(new PageImpl<>(itemRequests));
+
+        List<ItemRequestResponseDto> result = itemRequestServiceImpl.getAllRequests(from, size, userId);
+
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertEquals(mockItemRequest1.getId(), result.get(0).getId());
+        Assertions.assertEquals(mockItemRequest2.getId(), result.get(1).getId());
+    }
+
+    @Test
+    public void testGetAllForRequestor_UserHasRequests() {
+        Long userId = 1L;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser1));
+        Mockito.when(itemRequestRepository.findAllByRequestor_idOrderByCreatedAsc(userId))
+                .thenReturn(List.of(mockItemRequest1, mockItemRequest2));
+
+        List<ItemRequestResponseDto> result = itemRequestServiceImpl.getAllForRequestor(userId);
+
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertEquals(mockItemRequest1.getId(), result.get(0).getId());
+        Assertions.assertEquals(mockItemRequest2.getId(), result.get(1).getId());
+    }
+
+    @Test
+    public void testGetAllRequests_UserWithNoRequests() {
+        Long userId = 1L;
+        int from = 0;
+        int size = 10;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser1));
+        Mockito.when(itemRequestRepository.findAllByRequestor_IdNotIn(List.of(userId), PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"))))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        List<ItemRequestResponseDto> result = itemRequestServiceImpl.getAllRequests(from, size, userId);
+
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testGetById_UserNotFound() {
+        Long requestId = 1L;
+        Long userId = 1L;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> itemRequestServiceImpl.getById(requestId, userId));
     }
 }
