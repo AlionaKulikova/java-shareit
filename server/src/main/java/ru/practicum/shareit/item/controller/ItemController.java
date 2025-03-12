@@ -40,12 +40,12 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<ItemDto> createNewItem( @RequestBody ItemDto itemDto,
-                                              @RequestHeader(value = USER_ID_HEADER) Long userId) {
+    public ResponseEntity<ItemDto> createNewItem(@RequestBody ItemDto itemDto,
+                                                 @RequestHeader(value = USER_ID_HEADER) Long userId) {
         log.info("Эндпоинт /items. Получен POST запрос от пользователя c id {} на добавление новой вещи {}.",
                 userId, itemDto);
 
-        return new ResponseEntity<>(itemService.createNewItem( itemDto,userId), HttpStatus.CREATED);
+        return new ResponseEntity<>(itemService.createNewItem(itemDto, userId), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")

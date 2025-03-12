@@ -28,8 +28,8 @@ public class CommentController {
                                                          @RequestHeader(value = USER_ID_HEADER) Long userId,
                                                          @RequestBody CommentDto commentDto) {
         log.info("Эдпонинт /items/{}/comment. Получен POST запрос  от пользователя c id {} на создание" +
-                        " комментария с id {}.", itemId, userId, commentDto);
-        LocalDateTime date=  commentDto.getCreated();
+                " комментария с id {}.", itemId, userId, commentDto);
+        LocalDateTime date = commentDto.getCreated();
         return new ResponseEntity<>(commentService.addComment(commentDto, itemId, userId, date), HttpStatus.OK);
     }
 }

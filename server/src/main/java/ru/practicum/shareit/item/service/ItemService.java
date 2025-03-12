@@ -11,7 +11,7 @@ public interface ItemService {
 
     ItemResponseDto getItemById(Long id, Long userId);
 
-    ItemDto createNewItem( ItemDto itemDto, Long userOwnerId);
+    ItemDto createNewItem(ItemDto itemDto, Long userOwnerId);
 
     ItemDto updateItemOfUserById(Long id, ItemDto itemDto, Long userOwnerId);
 
