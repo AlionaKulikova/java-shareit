@@ -13,8 +13,6 @@ import ru.practicum.shareit.comment.mapper.CommentMapper;
 import ru.practicum.shareit.comment.model.Comment;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -61,18 +59,12 @@ public class CommentResponseDtoTest {
         assertThat("2023-07-07T12:12").isEqualTo(commentResponseDto.getCreated().toString());
     }
 
-
-    /////////////
-
-
-
     @Test
     void testCommentToDtoComment_NullPointerException() {
         assertThatThrownBy(() -> CommentMapper.commentToDtoComment(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Комментарий не может быть null.");
     }
-
 
     @Test
     void testToResponseDto_NullPointerException() {
