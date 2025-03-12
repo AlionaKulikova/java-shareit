@@ -696,4 +696,57 @@ public class BookingServiceTest {
 
         assertThrows(NotFoundException.class, () -> bookingServiceManager.getById(bookingId, userId));
     }
+
+    @Test
+    public void createBookingWithNonExistentUserShouldThrowNotFoundException() {
+        BookingRequestDto bookingRequestDto = new BookingRequestDto(mockItem1.getId(), LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2));
+        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingServiceManager.createBooking(bookingRequestDto, 1L));
+    }
+
+
+    @Test
+    public void getAllByOwnerWhenNoBookingsShouldReturnEmptyList() {
+        Long ownerId = 1L;
+        Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(mockUser1));
+        Mockito.when(bookingRepository.getAllBookingsForOwner(ownerId)).thenReturn(List.of());
+
+        List<BookingResponseDto> bookings = bookingServiceManager.getAllByOwner(0, 10, "ALL", ownerId);
+        assertThat(bookings).isEmpty();
+    }
+
+
+    @Test
+    public void getAllByBookerWithInvalidStateShouldThrowConditionsNotMetException() {
+        Long bookerId = 1L;
+        Mockito.when(userRepository.findById(bookerId)).thenReturn(Optional.of(mockUser1));
+
+        assertThrows(ConditionsNotMetException.class, () -> {
+            bookingServiceManager.getAllByBooker(0, 10, "INVALID_STATE", bookerId);
+        });
+    }
+
+    @Test
+    public void confirmBookingWhenUserIsNotOwnerShouldThrowResponseStatus() {
+        Booking booking = mockBooking1;
+        booking.setStatus(StatusType.WAITING);
+        Mockito.when(bookingRepository.findById(Mockito.any())).thenReturn(Optional.of(booking));
+        Mockito.when(userRepository.existsById(Mockito.any())).thenReturn(true);
+
+        assertThrows(ResponseStatusException.class, () -> {
+            bookingServiceManager.confirm(booking.getId(), mockUser2.getId(), true);
+        });
+    }
+
+    @Test
+    public void getByIdWhenBookingDoesNotExistShouldThrowNotFoundException() {
+        Long bookingId = 999L;
+        Long userId = 1L;
+        Mockito.when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            bookingServiceManager.getById(bookingId, userId);
+        });
+    }
 }
