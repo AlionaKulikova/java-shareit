@@ -177,4 +177,65 @@ public class ItemRequestServiceTest {
             ItemRequestMapper.itemRequestToDto(null);
         });
     }
+
+    @Test
+    public void testCreateRequest_UserNotFound() {
+        ItemRequestDto itemRequestDto = ItemRequestMapper.itemRequestToDto(mockItemRequest1);
+        Long userId = 1L;
+
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> itemRequestServiceImpl.createRequest(itemRequestDto, userId));
+        Mockito.verify(itemRequestRepository, never()).save(any());
+    }
+
+    @Test
+    public void testGetAllForRequestor_UserHasNoRequests() {
+        Long userId = 1L;
+
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.of(new User()));
+        Mockito.when(itemRequestRepository.findAllByRequestor_idOrderByCreatedAsc(userId))
+                .thenReturn(List.of());
+
+        List<ItemRequestResponseDto> result = itemRequestServiceImpl.getAllForRequestor(userId);
+
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testGetAllForRequestor_UserNotFound() {
+        Long userId = 1L;
+
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> itemRequestServiceImpl.getAllForRequestor(userId));
+    }
+
+    @Test
+    public void testGetById_ItemRequestNotFound() {
+        Long requestId = 1L;
+        Long userId = 1L;
+
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.of(new User()));
+        Mockito.when(itemRequestRepository.findById(requestId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> itemRequestServiceImpl.getById(requestId, userId));
+    }
+
+    @Test
+    public void testGetAllRequests_UserNotFound() {
+        Long userId = 1L;
+        int from = 0;
+        int size = 10;
+
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> itemRequestServiceImpl.getAllRequests(from, size, userId));
+    }
 }
