@@ -18,10 +18,11 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 public class ItemRequestController {
 
     private final ItemRequestClient itemRequestClient;
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     public ResponseEntity<Object> createRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
-                                                @RequestHeader(value = "X-Sharer-User-Id") @Positive Long userId) {
+                                                @RequestHeader(value = USER_ID_HEADER) @Positive Long userId) {
         log.info("Получен POST запрос по эндпоинту /requests на добавление нового ItemRequest {} от User с ID {}.",
                 itemRequestDto, userId);
         return itemRequestClient.createRequest(itemRequestDto, userId);
@@ -29,7 +30,7 @@ public class ItemRequestController {
 
     @GetMapping
     public ResponseEntity<Object> getAllForRequestor(
-            @RequestHeader(value = "X-Sharer-User-Id") @Positive Long userId) {
+            @RequestHeader(value = USER_ID_HEADER) @Positive Long userId) {
         log.info("Получен GET запрос по эндпоинту /requests на получение всех ItemRequest с данными об ответах "
                 + "на них для User с ID {}.", userId);
         return itemRequestClient.getAllForRequestor(userId);
@@ -39,7 +40,7 @@ public class ItemRequestController {
     public ResponseEntity<Object> getAll(
             @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
             @RequestParam(defaultValue = "20", required = false) @Positive int size,
-            @RequestHeader(value = "X-Sharer-User-Id") @Positive Long userId) {
+            @RequestHeader(value = USER_ID_HEADER) @Positive Long userId) {
         log.info("Получен GET запрос по эндпоинту /requests/all на получение всех ItemRequest для User с ID {}.",
                 userId);
         return itemRequestClient.getAll(from, size, userId);
@@ -47,7 +48,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getById(@PathVariable @Positive long requestId,
-                                          @RequestHeader(value = "X-Sharer-User-Id") @Positive Long userId) {
+                                          @RequestHeader(value = USER_ID_HEADER) @Positive Long userId) {
         log.info("Получен GET запрос по эндпоинту /requests/{} на получение ItemRequest c ID {} для User с ID {}.",
                 requestId, requestId, userId);
         return itemRequestClient.getById(requestId, userId);

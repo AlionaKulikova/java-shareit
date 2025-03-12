@@ -14,7 +14,6 @@ import java.util.List;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ItemDto {
-
     private Long id;
     private String name;
     private String description;
@@ -25,5 +24,4 @@ public class ItemDto {
     private BookingShortDto lastBooking;
     private BookingShortDto nextBooking;
     private List<Comment> comments;
-
 }

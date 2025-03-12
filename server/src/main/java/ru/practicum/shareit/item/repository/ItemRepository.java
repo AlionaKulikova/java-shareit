@@ -21,10 +21,4 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     void deleteItemByIdAndOwner_Id(long itemId, long userId);
 
     List<Item> findAllByRequestIdOrderByIdAsc(Long requestId);
-
-
-
-
-
-
 }

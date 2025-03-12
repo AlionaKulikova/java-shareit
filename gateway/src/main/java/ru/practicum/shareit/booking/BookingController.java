@@ -19,9 +19,10 @@ import ru.practicum.shareit.booking.dto.BookingState;
 @Validated
 public class BookingController {
 	private final BookingClient bookingClient;
+	private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
 	@GetMapping
-	public ResponseEntity<Object> getBookings(@RequestHeader("X-Sharer-User-Id") long userId,
+	public ResponseEntity<Object> getBookings(@RequestHeader(USER_ID_HEADER) long userId,
 											  @RequestParam(name = "state", defaultValue = "all") String stateParam,
 											  @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
 											  @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
@@ -32,27 +33,27 @@ public class BookingController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
+	public ResponseEntity<Object> bookItem(@RequestHeader(USER_ID_HEADER) long userId,
 										   @RequestBody @Valid BookingRequestDto requestDto) {
 		log.info("Создание booking {}, userId={}", requestDto, userId);
 		return bookingClient.bookItem(userId, requestDto);
 	}
 
 	@GetMapping("/{bookingId}")
-	public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+	public ResponseEntity<Object> getBooking(@RequestHeader(USER_ID_HEADER) long userId,
 											 @PathVariable Long bookingId) {
 		log.info("Получение booking {}, userId={}", bookingId, userId);
 		return bookingClient.getBooking(userId, bookingId);
 	}
 
 	@PatchMapping("/{bookingId}")
-	public ResponseEntity<Object> acceptBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+	public ResponseEntity<Object> acceptBooking(@RequestHeader(USER_ID_HEADER) Long userId,
 												@RequestParam boolean approved, @PathVariable Long bookingId) {
 		return bookingClient.acceptBooking(userId, approved, bookingId);
 	}
 
 	@GetMapping("/owner")
-	public ResponseEntity<Object> findOwnerBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
+	public ResponseEntity<Object> findOwnerBookings(@RequestHeader(USER_ID_HEADER) Long userId,
 													@RequestParam(name = "state", defaultValue = "all")
 													String stateParam) {
 		BookingState state = BookingState.from(stateParam)

@@ -24,7 +24,7 @@ public class ItemController {
     public ResponseEntity<Object> getItemsOfUser(
             @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
             @RequestParam(defaultValue = "10", required = false) @Positive int size,
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+            @RequestHeader(value = USER_ID_HEADER) Long userId) {
         log.info("Эндпоинт /items. Получен GET запрос по  от пользователя c id {} на получение всех своих вещей.",
                 userId);
         return itemClient.getItemsOfUserById(from, size, userId);
@@ -72,7 +72,7 @@ public class ItemController {
         @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
         @RequestParam(defaultValue = "10", required = false) @Positive int size,
         @RequestParam(name = "text") String text,
-        @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        @RequestHeader(value = USER_ID_HEADER) Long userId) {
         log.info("Эндпоинт /items/search. Получен GET запрос от пользователя c id {} на получение списка вещей" +
                 " по запросу '{}'.", userId, text);
             return itemClient.findItemsOfUser(from, size, text, userId);

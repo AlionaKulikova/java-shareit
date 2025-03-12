@@ -19,7 +19,7 @@ public class CommentController {
 
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> addComment(@PathVariable("itemId") @Positive long itemId,
-                                             @RequestHeader(value = "X-Sharer-User-Id") @Positive long userId,
+                                             @RequestHeader(value = USER_ID_HEADER) @Positive long userId,
                                              @Valid @RequestBody CommentDto commentDto) {
         log.info("Получен POST запрос по эндпоинту /items/{}/comment от User c ID {} на создание Comment {}.", itemId,
                 userId, commentDto);

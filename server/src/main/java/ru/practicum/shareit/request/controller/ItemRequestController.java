@@ -18,10 +18,11 @@ import java.util.List;
 public class ItemRequestController {
 
     private final ItemRequestService itemRequestService;
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     public ResponseEntity<ItemRequestDto> createRequest(@RequestBody ItemRequestDto itemRequestDto,
-                                                        @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                                        @RequestHeader(value = USER_ID_HEADER) Long userId) {
         log.info("Эндпоинт /requests.POST запрос на добавление нового ItemRequest {} от пользователя с id {}.",
                 itemRequestDto, userId);
         return new ResponseEntity<>(itemRequestService.createRequest(itemRequestDto, userId), HttpStatus.CREATED);
@@ -29,7 +30,7 @@ public class ItemRequestController {
 
     @GetMapping
     public ResponseEntity<List<ItemRequestResponseDto>> getAllForRequestor(
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+            @RequestHeader(value = USER_ID_HEADER) Long userId) {
         log.info("Эндпоинт /requests. GET запрос  на получение всех ItemRequest с" +
                 " данными об ответах на них для пользователя с id {}.", userId);
         return new ResponseEntity<>(itemRequestService.getAllForRequestor(userId), HttpStatus.OK);
@@ -39,7 +40,7 @@ public class ItemRequestController {
     public ResponseEntity<List<ItemRequestResponseDto>> getAll(
             @RequestParam(defaultValue = "0", required = false) int from,
             @RequestParam(defaultValue = "20", required = false) int size,
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+            @RequestHeader(value = USER_ID_HEADER) Long userId) {
         log.info("эндпоинту /requests/all. GET запрос по  на получение всех ItemRequest для пользователя с id {}.",
                 userId);
         return new ResponseEntity<>(itemRequestService.getAllRequests(from, size, userId),
@@ -48,7 +49,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     public ResponseEntity<ItemRequestResponseDto> getById(@PathVariable long requestId,
-                                                          @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                                          @RequestHeader(value = USER_ID_HEADER) Long userId) {
         log.info("Эндпоинт /requests/{}. GET запрос на получение ItemRequest c id {} для пользователя с id {}.",
                 requestId, requestId, userId);
         return new ResponseEntity<>(itemRequestService.getById(requestId, userId), HttpStatus.OK);
