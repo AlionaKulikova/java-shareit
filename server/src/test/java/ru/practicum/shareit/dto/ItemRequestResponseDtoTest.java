@@ -100,4 +100,3 @@ public class ItemRequestResponseDtoTest {
         assertThat(itemRequestResponseDtoJsonContent).extractingJsonPathArrayValue("$.items").isNotEmpty();
     }
 }
-

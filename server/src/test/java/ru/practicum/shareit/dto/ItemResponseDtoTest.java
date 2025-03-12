@@ -106,5 +106,4 @@ public class ItemResponseDtoTest {
         assertThat(itemResponseDtoJsonContent).extractingJsonPathNumberValue("$.requestId").isEqualTo(7);
         assertThat(itemResponseDtoJsonContent).extractingJsonPathArrayValue("$.comments").isNotNull();
     }
-
 }

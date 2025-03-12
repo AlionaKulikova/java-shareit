@@ -164,7 +164,7 @@ public class ItemControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(itemService).getItemsOfUserById( owner.getId());
+        Mockito.verify(itemService).getItemsOfUserById(owner.getId());
     }
 
     @Test

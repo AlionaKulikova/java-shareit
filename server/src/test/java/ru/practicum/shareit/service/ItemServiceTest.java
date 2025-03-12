@@ -56,10 +56,11 @@ public class ItemServiceTest {
     ItemServiceManager itemService;
 
     private MockitoSession session;
+
     @BeforeEach
     void init() {
         session = Mockito.mockitoSession().initMocks(this).startMocking();
-        itemService = new ItemServiceManager(itemRepository, userRepository, commentRepository,bookingRepository);
+        itemService = new ItemServiceManager(itemRepository, userRepository, commentRepository, bookingRepository);
         mockUser1 = new User(1L, "Иван", "ivan@yandex.ru");
         mockUser2 = new User(2L, "Петр", "petr@yandex.ru");
         mockItem1 = new Item(1L, "Книга", "Описание книги",
@@ -259,7 +260,7 @@ public class ItemServiceTest {
         bookingRepository.save(lastBooking);
         bookingRepository.save(nextBooking);
 
-        List<ItemResponseDto> itemResponseDtos = itemService.getItemsOfUserById( userOwner.getId());
+        List<ItemResponseDto> itemResponseDtos = itemService.getItemsOfUserById(userOwner.getId());
 
         Assertions.assertEquals(2, itemResponseDtos.size());
         ItemResponseDto itemResponseDto1 = itemResponseDtos.get(0);
@@ -322,7 +323,7 @@ public class ItemServiceTest {
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         Mockito.when(itemRepository.findByText(text)).thenReturn(items);
 
-        List<ItemDto> result = itemService.findItemsOfUser( text, user.getId());
+        List<ItemDto> result = itemService.findItemsOfUser(text, user.getId());
 
         Assertions.assertEquals(2, result.size());
     }

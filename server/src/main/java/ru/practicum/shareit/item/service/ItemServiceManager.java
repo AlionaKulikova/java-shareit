@@ -85,7 +85,7 @@ public class ItemServiceManager implements ItemService {
 
     @Transactional
     @Override
-    public ItemDto createNewItem( ItemDto itemDto, Long userId ) {
+    public ItemDto createNewItem(ItemDto itemDto, Long userId) {
         log.info("server сервис вещь");
         if (itemDto.getAvailable() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Вещь не доступна для заказа.");

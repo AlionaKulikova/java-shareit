@@ -37,5 +37,4 @@ public class ItemRepositoryTest {
             .owner(userOwner)
             .requestId(userRequestor.getId())
             .build();
-
 }

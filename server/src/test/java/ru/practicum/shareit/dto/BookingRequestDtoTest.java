@@ -26,8 +26,8 @@ public class BookingRequestDtoTest {
 
         BookingRequestDto bookingRequestDto = BookingRequestDto.builder()
                 .itemId(1L)
-                .start(LocalDateTime.of(2023, 1, 12, 12, 12,0))
-                .end(LocalDateTime.of(2023, 1, 13, 12, 12,0))
+                .start(LocalDateTime.of(2023, 1, 12, 12, 12, 0))
+                .end(LocalDateTime.of(2023, 1, 13, 12, 12, 0))
                 .build();
 
         JsonContent<BookingRequestDto> bookingRequestDtoJsonContent = jacksonTester.write(bookingRequestDto);
@@ -49,5 +49,4 @@ public class BookingRequestDtoTest {
         assertThat("2023-01-12T12:12").isEqualTo(bookingRequestDto.getStart().toString());
         assertThat("2023-01-13T12:12").isEqualTo(bookingRequestDto.getEnd().toString());
     }
-
 }

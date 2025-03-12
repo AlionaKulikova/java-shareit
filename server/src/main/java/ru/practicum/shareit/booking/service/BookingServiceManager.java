@@ -65,7 +65,7 @@ public class BookingServiceManager implements BookingService {
         booking.setItem(item);
         bookingRepository.save(booking);
         log.info("Создано бронирование {} от пользователя с id {}.", booking, userId);
-        BookingResponseDto book=BookingMapper.bookingToResponse(booking);
+        BookingResponseDto book = BookingMapper.bookingToResponse(booking);
         return book;
     }
 

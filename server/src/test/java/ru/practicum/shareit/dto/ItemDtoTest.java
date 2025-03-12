@@ -45,7 +45,6 @@ public class ItemDtoTest {
                 .comments(null)
                 .build();
 
-
         JsonContent<ItemDto> itemDtoJsonContent = jacksonTester.write(itemDto);
 
         assertThat(itemDtoJsonContent).extractingJsonPathNumberValue("$.id").isEqualTo(1);
@@ -58,7 +57,5 @@ public class ItemDtoTest {
         assertThat(itemDtoJsonContent).extractingJsonPathNumberValue("$.nextBooking.id").isEqualTo(5);
         assertThat(itemDtoJsonContent).extractingJsonPathNumberValue("$.nextBooking.bookerId").isEqualTo(5);
         assertThat(itemDtoJsonContent).extractingJsonPathNumberValue("$.comments").isNull();
-
     }
-
 }

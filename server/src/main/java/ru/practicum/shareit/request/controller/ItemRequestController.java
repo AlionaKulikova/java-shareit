@@ -11,7 +11,6 @@ import ru.practicum.shareit.request.service.ItemRequestService;
 
 import java.util.List;
 
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +21,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ResponseEntity<ItemRequestDto> createRequest(@RequestBody ItemRequestDto itemRequestDto,
-                                                 @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                                        @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         log.info("Эндпоинт /requests.POST запрос на добавление нового ItemRequest {} от пользователя с id {}.",
                 itemRequestDto, userId);
         return new ResponseEntity<>(itemRequestService.createRequest(itemRequestDto, userId), HttpStatus.CREATED);
