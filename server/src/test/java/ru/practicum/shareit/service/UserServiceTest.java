@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -130,5 +131,31 @@ public class UserServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             UserMapper.userDtoToUser(userDto);
         });
+    }
+
+    @Test
+    public void testGetAllUsers() {
+        List<User> users = Arrays.asList(mockUser1, mockUser2);
+
+        Mockito.when(userRepository.findAll())
+                .thenReturn(users);
+
+        List<UserDto> userDtos = userService.getAllUsers();
+
+        Mockito.verify(userRepository, Mockito.times(1)).findAll();
+        Assertions.assertEquals(2, userDtos.size());
+        Assertions.assertEquals(mockUser1.getId(), userDtos.get(0).getId());
+        Assertions.assertEquals(mockUser2.getId(), userDtos.get(1).getId());
+    }
+
+    @Test
+    public void testDeleteUserById_UserNotFound() {
+        Long nonExistingId = 999L;
+
+        Mockito.when(userRepository.existsById(nonExistingId))
+                .thenReturn(false);
+
+        Assertions.assertThrows(NotFoundException.class, () -> userService.deleteUserById(nonExistingId));
+        Mockito.verify(userRepository, Mockito.times(0)).deleteById(nonExistingId);
     }
 }

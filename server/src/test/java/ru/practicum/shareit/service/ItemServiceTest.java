@@ -385,6 +385,72 @@ public class ItemServiceTest {
 
         Assertions.assertEquals(0, result.size());
     }
+
+    @Test
+    public void testGetItemsOfUserByIdUserHasNoItems() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.of(user));
+
+        Mockito.when(itemRepository.findAllByOwnerIdOrderByIdAsc(userId))
+                .thenReturn(List.of());
+
+        List<ItemResponseDto> result = itemService.getItemsOfUserById(userId);
+
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testGetItemByIdItemNotFound() {
+        Long itemId = 1L;
+        Long userId = 1L;
+
+        Mockito.when(itemRepository.findById(itemId))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertThrows(NotFoundException.class, () -> itemService.getItemById(itemId, userId));
+    }
+
+    @Test
+    public void testCreateNewItemInvalidName() {
+        ItemDto itemDto = ItemMapper.itemToItemDto(mockItem1);
+        itemDto.setName(null);
+
+        Assertions.assertThrows(ResponseStatusException.class, () -> itemService.createNewItem(itemDto, mockUser1.getId()));
+        Mockito.verify(itemRepository, Mockito.times(0)).save(Mockito.any());
+    }
+
+    @Test
+    public void testCreateNewItemInvalidDescription() {
+        ItemDto itemDto = ItemMapper.itemToItemDto(mockItem1);
+        itemDto.setDescription(null);
+
+        Assertions.assertThrows(ResponseStatusException.class, () -> itemService.createNewItem(itemDto, mockUser1.getId()));
+        Mockito.verify(itemRepository, Mockito.times(0)).save(Mockito.any());
+    }
+
+    @Test
+    public void testCreateNewItemInvalidAvailable() {
+        ItemDto itemDto = ItemMapper.itemToItemDto(mockItem1);
+        itemDto.setAvailable(null);
+
+        Assertions.assertThrows(ResponseStatusException.class, () -> itemService.createNewItem(itemDto, mockUser1.getId()));
+        Mockito.verify(itemRepository, Mockito.times(0)).save(Mockito.any());
+    }
+
+    @Test
+    public void testDeleteItemOfUserByIdItemNotFound() {
+        Long itemId = 1L;
+        Long userOwnerId = 1L;
+
+        Mockito.when(itemRepository.findById(itemId))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertThrows(NotFoundException.class, () -> itemService.deleteItemOfUserById(itemId, userOwnerId));
+    }
 }
 
 
