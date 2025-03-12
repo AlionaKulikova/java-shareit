@@ -6,7 +6,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.exeption.ConditionsNotMetException;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -174,5 +176,54 @@ public class UserServiceTest {
         Assertions.assertThrows(ConditionsNotMetException.class, () -> {
             userService.getUserById(null);
         });
+    }
+
+    @Test
+    public void testGetUserByIdUserNotFound() {
+        Long nonExistingId = 999L;
+
+        Mockito.when(userRepository.findById(nonExistingId))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertThrows(ResponseStatusException.class, () -> userService.getUserById(nonExistingId));
+    }
+
+    @Test
+    public void testUpdateUserByIdWithNullId() {
+        UserDto userDto = UserMapper.userToUserDto(mockUser1);
+
+        Assertions.assertThrows(ConditionsNotMetException.class, () -> userService.updateUserById(null, userDto));
+    }
+
+    @Test
+    public void testCreateUserWithEmptyName() {
+        UserDto userDto = UserDto.builder().name("").email("ivan7yandex.ru").build();
+
+        Assertions.assertThrows(ConditionsNotMetException.class, () -> {
+            userService.createNewUser(userDto);
+        });
+    }
+
+    @Test
+    public void testCreateUserWithExistingEmail() {
+        UserDto userDto = UserMapper.userToUserDto(mockUser1);
+
+        Mockito.when(userRepository.save(Mockito.any()))
+                .thenThrow(new DataIntegrityViolationException("Duplicate email"));
+
+        Assertions.assertThrows(ConditionsNotMetException.class, () -> {
+            userService.createNewUser(userDto);
+        });
+    }
+
+    @Test
+    public void testGetAllUsers_EmptyList() {
+        Mockito.when(userRepository.findAll())
+                .thenReturn(Arrays.asList());
+
+        List<UserDto> userDtos = userService.getAllUsers();
+
+        Mockito.verify(userRepository, Mockito.times(1)).findAll();
+        Assertions.assertTrue(userDtos.isEmpty());
     }
 }
