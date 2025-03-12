@@ -7,17 +7,27 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.test.annotation.Rollback;
+import ru.practicum.shareit.comment.CommentDto;
 import ru.practicum.shareit.comment.CommentResponseDto;
+import ru.practicum.shareit.comment.mapper.CommentMapper;
+import ru.practicum.shareit.comment.model.Comment;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JsonTest
 public class CommentResponseDtoTest {
 
     @Autowired
     private JacksonTester<CommentResponseDto> jacksonTester;
+
+    private Comment comment;
+    private CommentDto commentDto;
+    private CommentResponseDto commentResponseDto;
 
     @Test
     @SneakyThrows
@@ -49,5 +59,33 @@ public class CommentResponseDtoTest {
         assertThat("Отлично").isEqualTo(commentResponseDto.getText());
         assertThat("Иван").isEqualTo(commentResponseDto.getAuthorName());
         assertThat("2023-07-07T12:12").isEqualTo(commentResponseDto.getCreated().toString());
+    }
+
+
+    /////////////
+
+
+
+    @Test
+    void testCommentToDtoComment_NullPointerException() {
+        assertThatThrownBy(() -> CommentMapper.commentToDtoComment(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Комментарий не может быть null.");
+    }
+
+
+    @Test
+    void testToResponseDto_NullPointerException() {
+        assertThatThrownBy(() -> CommentMapper.toResponseDto(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Комментарий не может быть null.");
+    }
+
+
+    @Test
+    void testCommentDtoToComment_NullPointerException() {
+        assertThatThrownBy(() -> CommentMapper.commentDtoToComment(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Комментарий не может быть null.");
     }
 }

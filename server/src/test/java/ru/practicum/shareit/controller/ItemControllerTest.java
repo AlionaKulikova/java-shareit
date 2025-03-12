@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -23,12 +24,15 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,6 +46,12 @@ public class ItemControllerTest {
     final MockMvc mockMvc;
     @MockBean
     ItemService itemService;
+
+    @MockBean
+    private ItemRepository itemRepository;
+
+    @MockBean
+    private UserRepository userRepository;
 
     private User mockUser1;
     private User mockUser2;
@@ -192,5 +202,21 @@ public class ItemControllerTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             ItemMapper.toResponseItem(item);
         });
+    }
+
+    @Test
+    public void testGetAllItemsOfUser_UserHasNoItems() throws Exception {
+        Long userId = 1L;
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.of(new User()));
+        Mockito.when(itemRepository.findAllByOwnerIdOrderByIdAsc(userId))
+                .thenReturn(List.of());
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/items")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        Assertions.assertEquals("[]", result.getResponse().getContentAsString());
     }
 }
